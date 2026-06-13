@@ -1,21 +1,20 @@
 namespace OverlayEngine.Domain.Overlay;
 
-public sealed class OverlayState
+public class OverlayState
 {
-    public OverlayMode Mode { get; private set; }
+    public OverlayMode Mode { get; private set; } = OverlayMode.View;
 
-    public OverlayState()
-    {
-        Mode = OverlayMode.Edit;
-    }
+    public event Action? ModeChanged;
 
     public void EnterEditMode()
     {
         Mode = OverlayMode.Edit;
+        ModeChanged?.Invoke();
     }
 
     public void EnterViewMode()
     {
         Mode = OverlayMode.View;
+        ModeChanged?.Invoke();
     }
 }

@@ -4,31 +4,23 @@ public sealed class Widget
 {
     public Guid Id { get; }
 
+    public string RendererKey { get; }
+
     public string Name { get; }
 
     public WidgetPosition Position { get; }
 
     public WidgetSize Size { get; }
 
-    public bool IsVisible { get; private set; }
+    public WidgetStyle Style { get; }
 
-    public Widget(Guid id, string name, WidgetPosition position, WidgetSize size)
+    public Widget(Guid id, string name, WidgetPosition position, WidgetSize size, WidgetStyle style, string rendererKey)
     {
         Id = id;
         Name = name;
         Position = position;
         Size = size;
-
-        IsVisible = true;
-    }
-
-    public void Show()
-    {
-        IsVisible = true;
-    }
-
-    public void Hide()
-    {
-        IsVisible = false;
+        Style = style;
+        RendererKey = rendererKey;
     }
 }
