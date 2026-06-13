@@ -17,4 +17,10 @@ public class WidgetPosition
         X = x;
         Y = y;
     }
+
+    public void Translate(double deltaX, double deltaY)
+    {
+        X += deltaX;
+        Y += deltaY;
+    }
 }
