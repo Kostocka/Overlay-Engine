@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OverlayEngine.App", "OverlayEngine.App\OverlayEngine.App.csproj", "{57B5492E-A327-4A62-BE82-A52E72DE3C41}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OverlayEngine.Domain", "OverlayEngine.Domain\OverlayEngine.Domain.csproj", "{3522C429-7A3F-49DE-8246-CE85D06B7CB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OverlayEngine.Application", "OverlayEngine.Application\OverlayEngine.Application.csproj", "{902D9244-D9D0-41BF-91D1-12B759B652DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,13 +10,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{57B5492E-A327-4A62-BE82-A52E72DE3C41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57B5492E-A327-4A62-BE82-A52E72DE3C41}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57B5492E-A327-4A62-BE82-A52E72DE3C41}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57B5492E-A327-4A62-BE82-A52E72DE3C41}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3522C429-7A3F-49DE-8246-CE85D06B7CB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3522C429-7A3F-49DE-8246-CE85D06B7CB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3522C429-7A3F-49DE-8246-CE85D06B7CB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3522C429-7A3F-49DE-8246-CE85D06B7CB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{902D9244-D9D0-41BF-91D1-12B759B652DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{902D9244-D9D0-41BF-91D1-12B759B652DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{902D9244-D9D0-41BF-91D1-12B759B652DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{902D9244-D9D0-41BF-91D1-12B759B652DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

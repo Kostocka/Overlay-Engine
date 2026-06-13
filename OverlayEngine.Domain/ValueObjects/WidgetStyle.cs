@@ -1,4 +1,4 @@
-namespace OverlayEngine.Domain.Widgets;
+namespace OverlayEngine.Domain.ValueObjects;
 
 public sealed class WidgetStyle
 {

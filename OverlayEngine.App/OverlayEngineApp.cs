@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using OverlayEngine.App.Controls;
-using OverlayEngine.App.Controls.Behaviors;
 using OverlayEngine.App.Rendering;
 using OverlayEngine.Domain.Overlay;
 using OverlayEngine.Domain.Layouts;
@@ -53,9 +52,7 @@ public sealed class OverlayEngineApp
                 Render();
             };
 
-            new DragBehavior().Attach(chrome);
-            new EditOverlayBehavior().Attach(chrome);
-            new ResizeBehavior().Attach(chrome);
+            _ = new WidgetInteractionController(chrome, widget,_state);
 
             Canvas.SetLeft(chrome, widget.Position.X);
             Canvas.SetTop(chrome, widget.Position.Y);
