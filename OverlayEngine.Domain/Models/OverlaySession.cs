@@ -1,4 +1,5 @@
 using OverlayEngine.Domain.Overlay;
+using OverlayEngine.Domain.ValueObjects;
 using OverlayEngine.Domain.Widgets;
 
 namespace OverlayEngine.Domain.Models;
@@ -11,57 +12,55 @@ public sealed class OverlaySession
 
     public OverlayMode Mode { get; private set; }
 
-    public Widget? SelectedWidget { get; private set; }
-
     public OverlaySession(OverlayProfile profile)
     {
         _widgets = profile.Widgets.Select(CloneWidget).ToList();
-
         Mode = OverlayMode.View;
     }
 
-    public void EnterEditMode()
-    {
-        Mode = OverlayMode.Edit;
-    }
+    public void EnterEditMode() => Mode = OverlayMode.Edit;
 
-    public void EnterViewMode()
+    public void EnterViewMode() => Mode = OverlayMode.View;
+
+    private void EnsureEditMode()
     {
-        Mode = OverlayMode.View;
+        if (Mode != OverlayMode.Edit)
+            throw new InvalidOperationException("Session is not in Edit mode");
     }
 
     public void AddWidget(Widget widget)
     {
+        EnsureEditMode();
         _widgets.Add(widget);
     }
 
-    public void RemoveWidget(Guid widgetId)
+    public void RemoveWidget(Guid id)
     {
-        var widget = _widgets.FirstOrDefault(x => x.Id == widgetId);
-
-        if (widget != null)
-        {
-            _widgets.Remove(widget);
-        }
+        EnsureEditMode();
+        _widgets.RemoveAll(x => x.Id == id);
     }
 
-    public void SelectWidget(Guid widgetId)
+    public Widget? Get(Guid id)
+        => _widgets.FirstOrDefault(x => x.Id == id);
+
+    public void MoveWidget(Guid id, double x, double y)
     {
-        SelectedWidget = _widgets.FirstOrDefault(x => x.Id == widgetId);
+        EnsureEditMode();
+
+        var widget = Get(id)
+            ?? throw new InvalidOperationException($"Widget {id} not found");
+
+        widget.MoveTo(x, y);
     }
 
-    public void MoveWidget(Guid widgetId, double x, double y)
+    public void ResizeWidget(Guid id, double w, double h)
     {
-        var widget = _widgets.FirstOrDefault(x => x.Id == widgetId);
+        EnsureEditMode();
 
-        widget?.MoveTo(x, y);
-    }
+        var widget = Get(id)
+            ?? throw new InvalidOperationException($"Widget {id} not found");
 
-    public void ResizeWidget( Guid widgetId, double width,double height)
-    {
-        var widget = _widgets.FirstOrDefault(x => x.Id == widgetId);
-
-        widget?.Resize(width, height);
+        widget.Resize(w, h);
     }
 
     private static Widget CloneWidget(Widget widget)

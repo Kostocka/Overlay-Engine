@@ -1,4 +1,4 @@
-namespace OverlayEngine.Domain.Models;
+namespace OverlayEngine.Domain.Models.WidgetsData;
 
 public sealed class TextWidgetData : WidgetData
 {

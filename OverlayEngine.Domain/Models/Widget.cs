@@ -1,4 +1,4 @@
-using OverlayEngine.Domain.Models;
+using OverlayEngine.Domain.Models.WidgetsData;
 using OverlayEngine.Domain.ValueObjects;
 
 namespace OverlayEngine.Domain.Widgets;

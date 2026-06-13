@@ -6,7 +6,9 @@ public sealed class WidgetStyle
     public double CornerRadius { get; private set; }
     public double Opacity { get; private set; }
 
-    public WidgetStyle(string background = "#FF2D2D2D", double cornerRadius = 8, double opacity = 1.0)
+    public static WidgetStyle Default => new("#FF2D2D2D", 8, 1.0);
+
+    public WidgetStyle(string background, double cornerRadius, double opacity)
     {
         Background = background;
         CornerRadius = cornerRadius;
