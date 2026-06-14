@@ -14,9 +14,12 @@ public sealed class OverlaySession
 
     public bool IsDirty { get; private set; }
 
+    public Guid? SelectedWidgetId { get; private set; }
+
     public event Action<Widget>? WidgetAdded;
     public event Action<Guid>? WidgetRemoved;
     public event Action<Widget>? WidgetChanged;
+    public event Action<Guid?>? SelectionChanged;
 
     public OverlaySession(OverlayProfile profile)
     {
@@ -34,6 +37,28 @@ public sealed class OverlaySession
     private void MarkDirty() => IsDirty = true;
 
     public Widget? Get(Guid id) => _widgets.FirstOrDefault(x => x.Id == id);
+
+    public Widget? GetSelected()
+    {
+        return SelectedWidgetId == null ? null : Get(SelectedWidgetId.Value);
+    }
+
+    public void SelectWidget(Guid widgetId)
+    {
+        if (_widgets.All(x => x.Id != widgetId))
+            throw new InvalidOperationException($"Widget {widgetId} not found");
+
+        SelectedWidgetId = widgetId;
+
+        SelectionChanged?.Invoke(widgetId);
+    }
+
+    public void ClearSelection()
+    {
+        SelectedWidgetId = null;
+
+        SelectionChanged?.Invoke(null);
+    }
 
     private void EnsureEditMode()
     {
@@ -54,7 +79,17 @@ public sealed class OverlaySession
     public void RemoveWidget(Guid id)
     {
         EnsureEditMode();
-        _widgets.RemoveAll(x => x.Id == id);
+
+        var removed = _widgets.RemoveAll(x => x.Id == id);
+
+        if (removed == 0)
+            return;
+
+        if (SelectedWidgetId == id)
+        {
+            SelectedWidgetId = null;
+            SelectionChanged?.Invoke(null);
+        }
 
         MarkDirty();
 

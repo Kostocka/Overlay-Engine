@@ -30,6 +30,21 @@ public sealed class SessionWidgetService
         Session.RemoveWidget(widgetId);
     }
 
+    public void Select(Guid widgetId)
+    {
+        Session.SelectWidget(widgetId);
+    }
+
+    public void ClearSelection()
+    {
+        Session.ClearSelection();
+    }
+
+    public Widget? GetSelected()
+    {
+        return Session.GetSelected();
+    }
+
     public void Move(Guid widgetId, double x, double y)
     {
         var widget = Session.Get(widgetId);
