@@ -27,7 +27,7 @@ public sealed class MoveWidgetCommand : ICommand
 
         widget.MoveTo(_newPosition);
 
-        _session.NotifyWidgetChanged(widget);
+        _session.UpdateWidget(widget);
     }
 
     public void Undo()
@@ -39,6 +39,6 @@ public sealed class MoveWidgetCommand : ICommand
 
         widget.MoveTo(_oldPosition);
 
-        _session.NotifyWidgetChanged(widget);
+        _session.UpdateWidget(widget);
     }
 }

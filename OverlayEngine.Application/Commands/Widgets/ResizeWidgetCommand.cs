@@ -27,7 +27,7 @@ public sealed class ResizeWidgetCommand : ICommand
 
         widget.Resize(_newSize);
 
-        _session.NotifyWidgetChanged(widget);
+        _session.UpdateWidget(widget);
     }
 
     public void Undo()
@@ -39,6 +39,6 @@ public sealed class ResizeWidgetCommand : ICommand
 
         widget.Resize(_oldSize);
 
-        _session.NotifyWidgetChanged(widget);
+        _session.UpdateWidget(widget);
     }
 }

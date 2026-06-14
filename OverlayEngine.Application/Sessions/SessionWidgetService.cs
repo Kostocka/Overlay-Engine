@@ -1,4 +1,5 @@
 using OverlayEngine.Application.Commands;
+using OverlayEngine.Application.Commands.Widgets;
 using OverlayEngine.Application.Widgets;
 using OverlayEngine.Application.Widgets.Templates;
 using OverlayEngine.Domain.Models;
@@ -13,10 +14,11 @@ public sealed class SessionWidgetService
     private readonly IWidgetFactory _widgetFactory;
     private readonly CommandManager _commandManager;
 
-    public SessionWidgetService(OverlaySessionService sessionService, IWidgetFactory widgetFactory)
+    public SessionWidgetService(OverlaySessionService sessionService, IWidgetFactory widgetFactory, CommandManager commandManager)
     {
         _sessionService = sessionService;
         _widgetFactory = widgetFactory;
+        _commandManager = commandManager;
     }
 
     private OverlaySession Session => _sessionService.GetRequiredSession();
@@ -24,23 +26,24 @@ public sealed class SessionWidgetService
     public Widget Add(WidgetTemplate template)
     {
         var widget = _widgetFactory.Create(template);
-        Session.AddWidget(widget);
+        _commandManager.Execute(new AddWidgetCommand(Session, widget));
+
         return widget;
     }
 
     public void Remove(Guid widgetId)
     {
-        Session.RemoveWidget(widgetId);
+        _commandManager.Execute(new RemoveWidgetCommand(Session, widgetId));
     }
 
     public void Select(Guid widgetId)
     {
-        Session.SelectWidget(widgetId);
+        _commandManager.Execute(new SelectWidgetCommand(Session, widgetId));
     }
 
     public void ClearSelection()
     {
-        Session.ClearSelection();
+        _commandManager.Execute(new ClearSelectionCommand(Session));
     }
 
     public Widget? GetSelected()
@@ -50,28 +53,16 @@ public sealed class SessionWidgetService
 
     public void Move(Guid widgetId, double x, double y)
     {
-        var widget = Session.Get(widgetId);
-
-        widget.MoveTo(new WidgetPosition(x,y));
-
-        Session.NotifyWidgetChanged(widget);
+        _commandManager.Execute(new MoveWidgetCommand(Session, widgetId, new WidgetPosition(x, y)));
     }
 
     public void Resize(Guid widgetId, double width, double height)
     {
-        var widget = Session.Get(widgetId);
-
-        widget.Resize(new WidgetSize(width, height));
-
-        Session.NotifyWidgetChanged(widget);
+        _commandManager.Execute(new ResizeWidgetCommand(Session, widgetId, new WidgetSize(width, height)));
     }
 
-    public void ChangeStyle(Guid widgetId, Domain.ValueObjects.WidgetStyle style)
+    public void ChangeStyle(Guid widgetId, WidgetStyle style)
     {
-        var widget = Session.Get(widgetId);
-
-        widget.ChangeStyle(style);
-
-        Session.NotifyWidgetChanged(widget);
+        _commandManager.Execute(new ChangeWidgetStyleCommand(Session, widgetId, style));
     }
 }

@@ -27,7 +27,7 @@ public sealed class ChangeWidgetStyleCommand : ICommand
 
         widget.ChangeStyle(_newStyle);
 
-        _session.NotifyWidgetChanged(widget);
+        _session.UpdateWidget(widget);
     }
 
     public void Undo()
@@ -39,6 +39,6 @@ public sealed class ChangeWidgetStyleCommand : ICommand
 
         widget.ChangeStyle(_oldStyle);
 
-        _session.NotifyWidgetChanged(widget);
+        _session.UpdateWidget(widget);
     }
 }
