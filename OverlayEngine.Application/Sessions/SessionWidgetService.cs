@@ -16,8 +16,7 @@ public sealed class SessionWidgetService
         _widgetFactory = widgetFactory;
     }
 
-    private OverlaySession Session =>
-        _sessionService.CurrentSession ?? throw new InvalidOperationException("No active session");
+    private OverlaySession Session => _sessionService.GetRequiredSession();
 
     public Widget Add(WidgetTemplate template)
     {
@@ -33,11 +32,28 @@ public sealed class SessionWidgetService
 
     public void Move(Guid widgetId, double x, double y)
     {
-        Session.MoveWidget(widgetId, x, y);
+        var widget = Session.Get(widgetId);
+
+        widget.MoveTo(x, y);
+
+        Session.NotifyWidgetChanged(widget);
     }
 
-    public void Resize(Guid widgetId, double w, double h)
+    public void Resize(Guid widgetId, double width, double height)
     {
-        Session.ResizeWidget(widgetId, w, h);
+        var widget = Session.Get(widgetId);
+
+        widget.Resize(width, height);
+
+        Session.NotifyWidgetChanged(widget);
+    }
+
+    public void ChangeStyle(Guid widgetId, Domain.ValueObjects.WidgetStyle style)
+    {
+        var widget = Session.Get(widgetId);
+
+        widget.ChangeStyle(style);
+
+        Session.NotifyWidgetChanged(widget);
     }
 }

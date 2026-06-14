@@ -8,6 +8,8 @@ public sealed class OverlaySessionService
 
     public bool HasActiveSession => CurrentSession != null;
 
+    public bool HasUnsavedChanges => CurrentSession?.IsDirty == true;
+
     public void OpenProfile(OverlayProfile profile)
     {
         CurrentSession = new OverlaySession(profile);
@@ -16,5 +18,10 @@ public sealed class OverlaySessionService
     public void CloseSession()
     {
         CurrentSession = null;
+    }
+
+    public OverlaySession GetRequiredSession()
+    {
+        return CurrentSession ?? throw new InvalidOperationException("No active session");
     }
 }

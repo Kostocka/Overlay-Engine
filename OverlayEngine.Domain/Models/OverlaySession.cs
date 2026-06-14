@@ -12,6 +12,8 @@ public sealed class OverlaySession
 
     public OverlayMode Mode { get; private set; }
 
+    public bool IsDirty { get; private set; }
+
     public event Action<Widget>? WidgetAdded;
     public event Action<Guid>? WidgetRemoved;
     public event Action<Widget>? WidgetChanged;
@@ -20,11 +22,18 @@ public sealed class OverlaySession
     {
         _widgets = profile.Widgets.Select(CloneWidget).ToList();
         Mode = OverlayMode.View;
+        IsDirty = false;
     }
 
     public void EnterEditMode() => Mode = OverlayMode.Edit;
 
     public void EnterViewMode() => Mode = OverlayMode.View;
+
+    public void MarkSaved() => IsDirty = false;
+
+    private void MarkDirty() => IsDirty = true;
+
+    public Widget? Get(Guid id) => _widgets.FirstOrDefault(x => x.Id == id);
 
     private void EnsureEditMode()
     {
@@ -37,6 +46,8 @@ public sealed class OverlaySession
         EnsureEditMode();
         _widgets.Add(widget);
 
+        MarkDirty();
+
         WidgetAdded?.Invoke(widget);
     }
 
@@ -45,32 +56,16 @@ public sealed class OverlaySession
         EnsureEditMode();
         _widgets.RemoveAll(x => x.Id == id);
 
+        MarkDirty();
+
         WidgetRemoved?.Invoke(id);
     }
 
-    public Widget? Get(Guid id)
-        => _widgets.FirstOrDefault(x => x.Id == id);
-
-    public void MoveWidget(Guid id, double x, double y)
+    public void NotifyWidgetChanged(Widget widget)
     {
         EnsureEditMode();
 
-        var widget = Get(id)
-            ?? throw new InvalidOperationException($"Widget {id} not found");
-
-        widget.MoveTo(x, y);
-
-        WidgetChanged?.Invoke(widget);
-    }
-
-    public void ResizeWidget(Guid id, double w, double h)
-    {
-        EnsureEditMode();
-
-        var widget = Get(id)
-            ?? throw new InvalidOperationException($"Widget {id} not found");
-
-        widget.Resize(w, h);
+        MarkDirty();
 
         WidgetChanged?.Invoke(widget);
     }
