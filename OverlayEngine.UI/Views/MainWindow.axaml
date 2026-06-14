@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:OverlayEngine.UI.ViewModels"
+        xmlns:controls="clr-namespace:OverlayEngine.UI.Controls"
+        x:Class="OverlayEngine.UI.Views.MainWindow"
+        Width="1200" Height="800"
+        Title="Overlay Engine">
+
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+
+    <Grid>
+        <controls:OverlayCanvas Name="Canvas"/>
+    </Grid>
+
+</Window>
