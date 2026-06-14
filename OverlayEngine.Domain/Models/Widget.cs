@@ -27,14 +27,14 @@ public sealed class Widget
         Data = widgetData;
     }
 
-    public void MoveTo(double x, double y)
+    public void MoveTo(WidgetPosition position)
     {
-        Position = new WidgetPosition(x, y);
+        Position = position;
     }
 
-    public void Resize(double width, double height)
+    public void Resize(WidgetSize size)
     {
-        Size = new WidgetSize(width, height);
+        Size = size;
     }
 
     public void ChangeStyle(WidgetStyle style)

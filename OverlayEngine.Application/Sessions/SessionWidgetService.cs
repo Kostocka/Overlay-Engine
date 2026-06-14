@@ -1,6 +1,7 @@
 using OverlayEngine.Application.Widgets;
 using OverlayEngine.Application.Widgets.Templates;
 using OverlayEngine.Domain.Models;
+using OverlayEngine.Domain.ValueObjects;
 using OverlayEngine.Domain.Widgets;
 
 namespace OverlayEngine.Application.Sessions;
@@ -49,7 +50,7 @@ public sealed class SessionWidgetService
     {
         var widget = Session.Get(widgetId);
 
-        widget.MoveTo(x, y);
+        widget.MoveTo(new WidgetPosition(x,y));
 
         Session.NotifyWidgetChanged(widget);
     }
@@ -58,7 +59,7 @@ public sealed class SessionWidgetService
     {
         var widget = Session.Get(widgetId);
 
-        widget.Resize(width, height);
+        widget.Resize(new WidgetSize(width, height));
 
         Session.NotifyWidgetChanged(widget);
     }

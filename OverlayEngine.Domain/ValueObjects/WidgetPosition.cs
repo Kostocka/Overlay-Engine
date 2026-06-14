@@ -1,26 +1,24 @@
 namespace OverlayEngine.Domain.ValueObjects;
 
-public class WidgetPosition
+public sealed class WidgetPosition
 {
-    public double X { get; private set; }
-
-    public double Y { get; private set;}
+    public double X { get; }
+    public double Y { get; }
 
     public WidgetPosition(double x, double y)
     {
+        if (x < 0)
+            throw new ArgumentOutOfRangeException(nameof(x));
+
+        if (y < 0)
+            throw new ArgumentOutOfRangeException(nameof(y));
+
         X = x;
         Y = y;
     }
 
-    public void MoveTo(double x, double y)
+    public WidgetPosition Translate(double dx, double dy)
     {
-        X = x;
-        Y = y;
-    }
-
-    public void Translate(double deltaX, double deltaY)
-    {
-        X += deltaX;
-        Y += deltaY;
+        return new WidgetPosition(X + dx, Y + dy);
     }
 }
