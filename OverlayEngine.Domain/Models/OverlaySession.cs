@@ -12,6 +12,10 @@ public sealed class OverlaySession
 
     public OverlayMode Mode { get; private set; }
 
+    public event Action<Widget>? WidgetAdded;
+    public event Action<Guid>? WidgetRemoved;
+    public event Action<Widget>? WidgetChanged;
+
     public OverlaySession(OverlayProfile profile)
     {
         _widgets = profile.Widgets.Select(CloneWidget).ToList();
@@ -32,12 +36,16 @@ public sealed class OverlaySession
     {
         EnsureEditMode();
         _widgets.Add(widget);
+
+        WidgetAdded?.Invoke(widget);
     }
 
     public void RemoveWidget(Guid id)
     {
         EnsureEditMode();
         _widgets.RemoveAll(x => x.Id == id);
+
+        WidgetRemoved?.Invoke(id);
     }
 
     public Widget? Get(Guid id)
@@ -51,6 +59,8 @@ public sealed class OverlaySession
             ?? throw new InvalidOperationException($"Widget {id} not found");
 
         widget.MoveTo(x, y);
+
+        WidgetChanged?.Invoke(widget);
     }
 
     public void ResizeWidget(Guid id, double w, double h)
@@ -61,6 +71,8 @@ public sealed class OverlaySession
             ?? throw new InvalidOperationException($"Widget {id} not found");
 
         widget.Resize(w, h);
+
+        WidgetChanged?.Invoke(widget);
     }
 
     private static Widget CloneWidget(Widget widget)

@@ -10,7 +10,7 @@ public sealed class SessionWidgetService
     private readonly OverlaySessionService _sessionService;
     private readonly IWidgetFactory _widgetFactory;
 
-    public SessionWidgetService( OverlaySessionService sessionService, IWidgetFactory widgetFactory)
+    public SessionWidgetService(OverlaySessionService sessionService, IWidgetFactory widgetFactory)
     {
         _sessionService = sessionService;
         _widgetFactory = widgetFactory;
