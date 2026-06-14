@@ -1,3 +1,4 @@
+using OverlayEngine.Domain.Events;
 using OverlayEngine.Domain.Overlay;
 using OverlayEngine.Domain.ValueObjects;
 using OverlayEngine.Domain.Widgets;
@@ -16,10 +17,7 @@ public sealed class OverlaySession
 
     public Guid? SelectedWidgetId { get; private set; }
 
-    public event Action<Widget>? WidgetAdded;
-    public event Action<Guid>? WidgetRemoved;
-    public event Action<Widget>? WidgetChanged;
-    public event Action<Guid?>? SelectionChanged;
+    public event Action<SessionEvent>? SessionChanged;
 
     public OverlaySession(OverlayProfile profile)
     {
@@ -28,13 +26,21 @@ public sealed class OverlaySession
         IsDirty = false;
     }
 
-    public void EnterEditMode() => Mode = OverlayMode.Edit;
+    public void EnterEditMode()
+    {
+        Mode = OverlayMode.Edit;
 
-    public void EnterViewMode() => Mode = OverlayMode.View;
+        Publish(new SessionModeChangedEvent(Mode));
+    }
+
+    public void EnterViewMode()
+    {
+        Mode = OverlayMode.View;
+
+        Publish(new SessionModeChangedEvent(Mode));
+    }
 
     public void MarkSaved() => IsDirty = false;
-
-    private void MarkDirty() => IsDirty = true;
 
     public Widget? Get(Guid id) => _widgets.FirstOrDefault(x => x.Id == id);
 
@@ -50,59 +56,64 @@ public sealed class OverlaySession
 
         SelectedWidgetId = widgetId;
 
-        SelectionChanged?.Invoke(widgetId);
+        Publish(new SelectionChangedEvent(widgetId));
     }
 
     public void ClearSelection()
     {
         SelectedWidgetId = null;
 
-        SelectionChanged?.Invoke(null);
-    }
-
-    private void EnsureEditMode()
-    {
-        if (Mode != OverlayMode.Edit)
-            throw new InvalidOperationException("Session is not in Edit mode");
+        Publish(new SelectionChangedEvent(null));
     }
 
     public void AddWidget(Widget widget)
     {
         EnsureEditMode();
-        _widgets.Add(widget);
 
+        _widgets.Add(widget);
         MarkDirty();
 
-        WidgetAdded?.Invoke(widget);
+        Publish(new WidgetAddedEvent(widget));
     }
 
     public void RemoveWidget(Guid id)
     {
         EnsureEditMode();
 
-        var removed = _widgets.RemoveAll(x => x.Id == id);
-
-        if (removed == 0)
+        var widget = _widgets.FirstOrDefault(x => x.Id == id);
+        if (widget == null)
             return;
+
+        _widgets.Remove(widget);
 
         if (SelectedWidgetId == id)
         {
             SelectedWidgetId = null;
-            SelectionChanged?.Invoke(null);
+            Publish(new SelectionChangedEvent(null));
         }
 
         MarkDirty();
 
-        WidgetRemoved?.Invoke(id);
+        Publish(new WidgetRemovedEvent(id));
     }
 
-    public void NotifyWidgetChanged(Widget widget)
+    public void UpdateWidget(Widget widget)
     {
         EnsureEditMode();
 
         MarkDirty();
 
-        WidgetChanged?.Invoke(widget);
+        Publish(new WidgetChangedEvent(widget));
+    }
+
+    private void MarkDirty() => IsDirty = true;
+
+    private void Publish(SessionEvent @event) => SessionChanged?.Invoke(@event);
+
+    private void EnsureEditMode()
+    {
+        if (Mode != OverlayMode.Edit)
+            throw new InvalidOperationException("Session is not in Edit mode");
     }
 
     private static Widget CloneWidget(Widget widget)
