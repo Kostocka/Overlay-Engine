@@ -1,3 +1,4 @@
+using OverlayEngine.Application.Commands;
 using OverlayEngine.Application.Widgets;
 using OverlayEngine.Application.Widgets.Templates;
 using OverlayEngine.Domain.Models;
@@ -10,6 +11,7 @@ public sealed class SessionWidgetService
 {
     private readonly OverlaySessionService _sessionService;
     private readonly IWidgetFactory _widgetFactory;
+    private readonly CommandManager _commandManager;
 
     public SessionWidgetService(OverlaySessionService sessionService, IWidgetFactory widgetFactory)
     {

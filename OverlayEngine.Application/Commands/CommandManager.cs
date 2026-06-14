@@ -5,6 +5,10 @@ public sealed class CommandManager
     private readonly Stack<ICommand> _undo = new();
     private readonly Stack<ICommand> _redo = new();
 
+    public bool CanUndo => _undo.Count > 0;
+
+    public bool CanRedo => _redo.Count > 0;
+
     public void Execute(ICommand command)
     {
         command.Execute();
@@ -16,7 +20,7 @@ public sealed class CommandManager
 
     public void Undo()
     {
-        if (_undo.Count == 0)
+        if (!CanUndo)
             return;
 
         var command = _undo.Pop();
@@ -28,7 +32,7 @@ public sealed class CommandManager
 
     public void Redo()
     {
-        if (_redo.Count == 0)
+        if (!CanRedo)
             return;
 
         var command = _redo.Pop();
