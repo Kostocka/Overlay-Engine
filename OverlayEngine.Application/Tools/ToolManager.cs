@@ -2,16 +2,15 @@ namespace OverlayEngine.Application.Tools;
 
 public sealed class ToolManager
 {
-    private ITool? _activeTool;
+    public ITool ActiveTool { get; private set; }
+
+    public ToolManager(ITool defaultTool)
+    {
+        ActiveTool = defaultTool;
+    }
 
     public void SetTool(ITool tool)
     {
-        _activeTool = tool;
+        ActiveTool = tool;
     }
-
-    public void PointerDown(PointerContext ctx) => _activeTool?.OnPointerDown(ctx);
-
-    public void PointerMove(PointerContext ctx) => _activeTool?.OnPointerMove(ctx);
-
-    public void PointerUp(PointerContext ctx) => _activeTool?.OnPointerUp(ctx);
 }

@@ -8,5 +8,5 @@ public interface IHitRegion
 {
     bool HitTest(Widget widget, Vector2D point);
 
-    IWidgetInteraction CreateInteraction(OverlayEditor editor, Guid widgetId);
+    IWidgetInteraction CreateInteraction(Guid widgetId);
 }

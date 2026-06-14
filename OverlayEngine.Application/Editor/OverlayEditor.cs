@@ -23,7 +23,14 @@ public sealed class OverlayEditor
 
     public OverlaySession Session => _sessions.GetRequiredSession();
 
-    public Widget Create(WidgetTemplate template) => _widgets.Add(template);
+    public Widget Create(WidgetTemplate template)
+    {
+        var widget = _widgets.CreateWidget(template);
+
+        _commands.Execute(new AddWidgetCommand(Session, widget));
+
+        return widget;
+    }
 
     public void Remove(Guid id) => _commands.Execute(new RemoveWidgetCommand(Session, id));
 

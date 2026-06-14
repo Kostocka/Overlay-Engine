@@ -60,8 +60,8 @@ public sealed class ResizeRegion : IHitRegion
         return false;
     }
 
-    public IWidgetInteraction CreateInteraction(OverlayEditor editor, Guid widgetId)
+    public IWidgetInteraction CreateInteraction(Guid widgetId)
     {
-        return new ResizeWidgetInteraction(editor, widgetId, _horizontal, _vertical);
+        return new ResizeWidgetInteraction(widgetId, _horizontal, _vertical);
     }
 }

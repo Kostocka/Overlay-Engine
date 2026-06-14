@@ -1,8 +1,7 @@
-namespace OverlayEngine.Application.Tools;
+using OverlayEngine.Application.Common;
+using OverlayEngine.Application.Interaction;
 
 public interface ITool
 {
-    void OnPointerDown(PointerContext context);
-    void OnPointerMove(PointerContext context);
-    void OnPointerUp(PointerContext context);
+    IWidgetInteraction? CreateInteraction(PointerContext context);
 }

@@ -1,34 +1,24 @@
-using OverlayEngine.Application.Editor;
+using OverlayEngine.Application.Common;
+using OverlayEngine.Application.Interaction;
 
 namespace OverlayEngine.Application.Tools;
 
 public sealed class SelectTool : ITool
 {
-    private readonly OverlayEditor _editor;
+    private readonly IWidgetHitTestService _hitTest;
 
-    public SelectTool(OverlayEditor editor)
+    public SelectTool(IWidgetHitTestService hitTest)
     {
-        _editor = editor;
+        _hitTest = hitTest;
     }
 
-    public void OnPointerDown(PointerContext context)
+    public IWidgetInteraction? CreateInteraction(PointerContext context)
     {
-        if (context.WidgetId == null)
-        {
-            _editor.ClearSelection();
-            return;
-        }
+        var hit = _hitTest.HitTest(context.Position);
 
-        _editor.Select(context.WidgetId.Value);
-    }
+        if (hit == null)
+            return null;
 
-    public void OnPointerMove(PointerContext context)
-    {
-        return;
-    }
-
-    public void OnPointerUp(PointerContext context)
-    {
-        return;
+        return hit.Region.CreateInteraction(hit.WidgetId);
     }
 }

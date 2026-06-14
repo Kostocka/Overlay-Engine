@@ -34,8 +34,8 @@ public sealed class BodyRegion : IHitRegion
                && point.Y <= bottom;
     }
 
-    public IWidgetInteraction CreateInteraction(OverlayEditor editor, Guid widgetId)
+    public IWidgetInteraction CreateInteraction(Guid widgetId)
     {
-        return new MoveWidgetInteraction(editor, widgetId);
+        return new MoveWidgetInteraction(widgetId);
     }
 }
