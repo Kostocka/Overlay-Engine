@@ -20,16 +20,17 @@ public sealed class Bootstrapper
     public OverlaySessionService SessionService { get; }
     public WidgetRendererRegistry Renderers { get; }
     public CanvasViewModel Canvas { get; private set; }
+    public CanvasSettings CanvasSettings { get; }
+    public ViewportLayoutService Viewport { get; }
 
     public Bootstrapper()
     {
         SessionService = new OverlaySessionService();
         var profile = new OverlayProfile(Guid.NewGuid(), "Default", 1920,1080, []);
-        var editorBounds = new EditorBounds(1920, 1080);
-        var boundsConstraint = new WidgetBoundsConstraint(editorBounds);
 
         SessionService.OpenProfile(profile);
 
+        var boundsService = new EditorBoundsService();
         var widgetFactory = new WidgetFactory();
         var sessionWidgets = new SessionWidgetService(widgetFactory);
         var commandManager = new CommandManager();
@@ -53,11 +54,18 @@ public sealed class Bootstrapper
         var session = SessionService.GetRequiredSession();
         session.SessionChanged += _ => { SessionToCanvasMapper.Update(session, Canvas); };
 
-        var hitTest = new WidgetHitTestService(SessionService);
+        var hitTest = new WidgetHitTestService(SessionService, boundsService);
         var selectTool = new SelectTool(hitTest);
         var toolManager = new ToolManager(selectTool);
 
         PointerController = new WidgetPointerController(toolManager, Editor);
         Renderers = new WidgetRendererRegistry();
+        Viewport = new ViewportLayoutService();
+
+        CanvasSettings = new CanvasSettings
+        {
+            ShowBounds = true,
+            ShowSelection = true
+        };
     }
 }

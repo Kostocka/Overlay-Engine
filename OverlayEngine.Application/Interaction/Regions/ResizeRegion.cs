@@ -9,24 +9,26 @@ public sealed class ResizeRegion : IHitRegion
 {
     private readonly int _horizontal;
     private readonly int _vertical;
+    private readonly EditorBoundsService _bounds;
 
-    private ResizeRegion(int horizontal, int vertical)
+    private ResizeRegion(int horizontal, int vertical, EditorBoundsService editorBoundsService)
     {
         _horizontal = horizontal;
         _vertical = vertical;
+        _bounds = editorBoundsService;
     }
 
-    public static ResizeRegion TopLeft() => new(-1, -1);
-    public static ResizeRegion Top() => new(0, -1);
-    public static ResizeRegion TopRight() => new(1, -1);
+    public static ResizeRegion TopLeft(EditorBoundsService bounds) => new(-1, -1, bounds);
+    public static ResizeRegion Top(EditorBoundsService bounds) => new(0, -1, bounds);
+    public static ResizeRegion TopRight(EditorBoundsService bounds) => new(1, -1, bounds);
 
-    public static ResizeRegion Right() => new(1, 0);
+    public static ResizeRegion Right(EditorBoundsService bounds) => new(1, 0, bounds);
 
-    public static ResizeRegion BottomRight() => new(1, 1);
-    public static ResizeRegion Bottom() => new(0, 1);
-    public static ResizeRegion BottomLeft() => new(-1, 1);
+    public static ResizeRegion BottomRight(EditorBoundsService bounds) => new(1, 1, bounds);
+    public static ResizeRegion Bottom(EditorBoundsService bounds) => new(0, 1, bounds);
+    public static ResizeRegion BottomLeft(EditorBoundsService bounds) => new(-1, 1, bounds);
 
-    public static ResizeRegion Left() => new(-1, 0);
+    public static ResizeRegion Left(EditorBoundsService bounds) => new(-1, 0, bounds);
 
     public bool HitTest(Widget widget, Vector2D point)
     {
@@ -62,6 +64,6 @@ public sealed class ResizeRegion : IHitRegion
 
     public IWidgetInteraction CreateInteraction(Guid widgetId)
     {
-        return new ResizeWidgetInteraction(widgetId, _horizontal, _vertical);
+        return new ResizeWidgetInteraction(widgetId, _horizontal, _vertical, _bounds);
     }
 }

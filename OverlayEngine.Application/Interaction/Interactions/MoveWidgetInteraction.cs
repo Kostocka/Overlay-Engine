@@ -11,10 +11,12 @@ public sealed class MoveWidgetInteraction : IWidgetInteraction
 
     private double _startX;
     private double _startY;
+    private readonly EditorBoundsService _bounds;
 
-    public MoveWidgetInteraction(Guid widgetId)
+    public MoveWidgetInteraction(Guid widgetId, EditorBoundsService editorBoundsService)
     {
         _widgetId = widgetId;
+        _bounds = editorBoundsService;
     }
 
     public void Begin(PointerContext context, OverlayEditor editor)
@@ -34,27 +36,12 @@ public sealed class MoveWidgetInteraction : IWidgetInteraction
 
         var dx = context.Position.X - _startMouse.X;
         var dy = context.Position.Y - _startMouse.Y;
-
         var x = _startX + dx;
         var y = _startY + dy;
 
-        if (x < 0)
-            x = 0;
+        var position = _bounds.ClampPosition(editor.Session, x, y, widget.Size.Width, widget.Size.Height);
 
-        if (y < 0)
-            y = 0;
-
-        var maxX = editor.Session.Width - widget.Size.Width;
-
-        var maxY = editor.Session.Height - widget.Size.Height;
-
-        if (x > maxX)
-            x = maxX;
-
-        if (y > maxY)
-            y = maxY;
-
-        editor.Move(_widgetId, x, y);
+        editor.Move(_widgetId, position.X, position.Y);
     }
 
     public void End(PointerContext context, OverlayEditor editor) {}

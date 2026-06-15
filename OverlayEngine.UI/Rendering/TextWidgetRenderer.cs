@@ -11,15 +11,21 @@ public sealed class TextWidgetRenderer : IWidgetRenderer
         return widget.Type == "TextWidgetData";
     }
 
-    public void Render(DrawingContext context, WidgetViewModel widget)
+    public void Render(DrawingContext context, WidgetViewModel widget, Rect bounds)
     {
-        context.DrawRectangle(
-            Brushes.Red,
-            null,
-            new Rect(
-                widget.X,
-                widget.Y,
-                widget.Width,
-                widget.Height));
+        context.DrawRectangle(Brushes.IndianRed, null, bounds);
+
+        var text = widget.Type;
+        var typeface = new Typeface("Arial");
+
+        var formatted = new FormattedText(
+            text,
+            System.Globalization.CultureInfo.InvariantCulture,
+            FlowDirection.LeftToRight,
+            typeface,
+            14,
+            Brushes.White);
+
+        context.DrawText(formatted, new Point(bounds.X + 8, bounds.Y + 8));
     }
 }

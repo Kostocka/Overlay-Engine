@@ -14,15 +14,17 @@ public sealed class ResizeWidgetInteraction : IWidgetInteraction
 
     private double _startX;
     private double _startY;
-
     private double _startWidth;
     private double _startHeight;
 
-    public ResizeWidgetInteraction(Guid widgetId, int horizontal, int vertical)
+    private readonly EditorBoundsService _bounds;
+
+    public ResizeWidgetInteraction(Guid widgetId, int horizontal, int vertical, EditorBoundsService editorBoundsService)
     {
         _widgetId = widgetId;
         _horizontal = horizontal;
         _vertical = vertical;
+        _bounds = editorBoundsService;
     }
 
     public void Begin(PointerContext context, OverlayEditor editor)
@@ -44,58 +46,10 @@ public sealed class ResizeWidgetInteraction : IWidgetInteraction
         var dx = context.Position.X - _startMouse.X;
         var dy = context.Position.Y - _startMouse.Y;
 
-        var newX = _startX;
-        var newY = _startY;
+        var result = _bounds.ClampResize(editor.Session, _startX, _startY, _startWidth, _startHeight, dx, dy, _horizontal, _vertical);
 
-        var newWidth = _startWidth;
-        var newHeight = _startHeight;
-
-        if (_horizontal > 0)
-        {
-            newWidth += dx;
-        }
-        else if (_horizontal < 0)
-        {
-            newX += dx;
-            newWidth -= dx;
-        }
-
-        if (_vertical > 0)
-        {
-            newHeight += dy;
-        }
-        else if (_vertical < 0)
-        {
-            newY += dy;
-            newHeight -= dy;
-        }
-
-        if (newWidth < EditorInteractionSettings.MinWidgetSize)
-        {
-            if (_horizontal < 0)
-            {
-                newX = _startX + (_startWidth - EditorInteractionSettings.MinWidgetSize);
-            }
-
-            newWidth = EditorInteractionSettings.MinWidgetSize;
-        }
-
-        if (newHeight < EditorInteractionSettings.MinWidgetSize)
-        {
-            if (_vertical < 0)
-            {
-                newY = _startY + (_startHeight - EditorInteractionSettings.MinWidgetSize);
-            }
-
-            newHeight = EditorInteractionSettings.MinWidgetSize;
-        }
-
-        if (newX != _startX || newY != _startY)
-        {
-            editor.Move(_widgetId, newX, newY);
-        }
-
-        editor.Resize(_widgetId, newWidth, newHeight);
+        editor.Move(_widgetId, result.X, result.Y);
+        editor.Resize(_widgetId, result.Width, result.Height);
     }
 
     public void End(PointerContext context, OverlayEditor editor) { }

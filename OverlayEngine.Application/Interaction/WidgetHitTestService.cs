@@ -1,4 +1,5 @@
 using OverlayEngine.Application.Common;
+using OverlayEngine.Application.Editor;
 using OverlayEngine.Application.Interaction.Regions;
 using OverlayEngine.Application.Sessions;
 
@@ -7,23 +8,24 @@ namespace OverlayEngine.Application.Interaction;
 public sealed class WidgetHitTestService : IWidgetHitTestService
 {
     private readonly OverlaySessionService _sessionService;
+    private readonly IHitRegion[] _regions;
 
-    private readonly IHitRegion[] _regions =
-    [
-        ResizeRegion.TopLeft(),
-        ResizeRegion.Top(),
-        ResizeRegion.TopRight(),
-        ResizeRegion.Right(),
-        ResizeRegion.BottomRight(),
-        ResizeRegion.Bottom(),
-        ResizeRegion.BottomLeft(),
-        ResizeRegion.Left(),
-        BodyRegion.Instance
-    ];
-
-    public WidgetHitTestService(OverlaySessionService sessionService)
+    public WidgetHitTestService(OverlaySessionService sessionService, EditorBoundsService bounds)
     {
         _sessionService = sessionService;
+
+        _regions =
+        [
+            ResizeRegion.TopLeft(bounds),
+            ResizeRegion.Top(bounds),
+            ResizeRegion.TopRight(bounds),
+            ResizeRegion.Right(bounds),
+            ResizeRegion.BottomRight(bounds),
+            ResizeRegion.Bottom(bounds),
+            ResizeRegion.BottomLeft(bounds),
+            ResizeRegion.Left(bounds),
+            new BodyRegion(bounds)
+        ];
     }
 
     public HitResult? HitTest(Vector2D point)

@@ -8,7 +8,11 @@ public static class SessionToCanvasMapper
 {
     public static CanvasViewModel Map(OverlaySession session)
     {
-        var vm = new CanvasViewModel();
+        var vm = new CanvasViewModel
+        {
+            SceneWidth = session.Width,
+            SceneHeight = session.Height
+        };
 
         foreach (var widget in session.Widgets)
         {
@@ -30,6 +34,9 @@ public static class SessionToCanvasMapper
 
     public static void Update(OverlaySession session, CanvasViewModel canvas)
     {
+        canvas.SceneWidth = session.Width;
+        canvas.SceneHeight = session.Height;
+
         canvas.Replace(
             session.Widgets.Select(widget => new WidgetViewModel
                 {

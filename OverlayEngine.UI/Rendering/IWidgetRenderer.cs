@@ -7,5 +7,5 @@ public interface IWidgetRenderer
 {
     bool CanRender(WidgetViewModel widget);
 
-    void Render(DrawingContext context, WidgetViewModel widget);
+    void Render(DrawingContext context, WidgetViewModel widget, Avalonia.Rect bounds);
 }

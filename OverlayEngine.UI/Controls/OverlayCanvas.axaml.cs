@@ -14,30 +14,51 @@ public partial class OverlayCanvas : UserControl
     private WidgetPointerController? _controller;
     private CanvasViewModel? _canvas;
     private WidgetRendererRegistry? _renderers;
+    private CanvasSettings? _settings;
+    private ViewportLayoutService? _viewport;
 
     public OverlayCanvas()
     {
         InitializeComponent();
+        SizeChanged += (_, __) => UpdateViewport();
     }
 
-    public void SetController(WidgetPointerController controller)
-    {
-        _controller = controller;
-    }
+    public void SetController(WidgetPointerController controller) => _controller = controller;
+
+    public void SetRenderers(WidgetRendererRegistry renderers) => _renderers = renderers;
+
+    public void SetSettings(CanvasSettings settings) => _settings = settings;
+
+    public void SetViewport(ViewportLayoutService viewport) => _viewport = viewport;
 
     public void SetCanvas(CanvasViewModel canvas)
     {
         _canvas = canvas;
-
-        canvas.Changed += () =>
-        {
-            InvalidateVisual();
-        };
+        canvas.Changed += () => InvalidateVisual();
+        UpdateViewport();
     }
 
-    public void SetRenderers(WidgetRendererRegistry renderers)
+    private void UpdateViewport()
     {
-        _renderers = renderers;
+        if (_canvas == null || _viewport == null)
+            return;
+
+        if (Bounds.Width <= 0 || Bounds.Height <= 0)
+            return;
+
+        _viewport.Fit(_canvas, Bounds.Width, Bounds.Height);
+        InvalidateVisual();
+    }
+
+    private Vector2D ToScene(Vector2D screen)
+    {
+        if (_canvas == null)
+            return screen;
+
+        var transform = new CanvasTransform(_canvas);
+        var p = transform.ScreenToScene(screen.X, screen.Y);
+
+        return new Vector2D(p.X, p.Y);
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -46,7 +67,7 @@ public partial class OverlayCanvas : UserControl
 
         _controller?.PointerDown(new PointerContext
         {
-            Position = new Vector2D(p.X, p.Y),
+            Position = ToScene(new Vector2D(p.X, p.Y)),
             Button = PointerButton.Left
         });
     }
@@ -57,7 +78,7 @@ public partial class OverlayCanvas : UserControl
 
         _controller?.PointerMove(new PointerContext
         {
-            Position = new Vector2D(p.X, p.Y),
+            Position = ToScene(new Vector2D(p.X, p.Y)),
             Button = PointerButton.Left
         });
     }
@@ -68,7 +89,7 @@ public partial class OverlayCanvas : UserControl
 
         _controller?.PointerUp(new PointerContext
         {
-            Position = new Vector2D(p.X, p.Y),
+            Position = ToScene(new Vector2D(p.X, p.Y)),
             Button = PointerButton.Left
         });
     }
@@ -77,22 +98,44 @@ public partial class OverlayCanvas : UserControl
     {
         base.Render(context);
 
+        if (_canvas == null || _renderers == null)
+            return;
+
+        var transform = new CanvasTransform(_canvas);
+
+        if (_settings?.ShowBounds == true)
+            DrawBounds(context, transform);
+
         foreach (var widget in _canvas.Widgets)
         {
-            var renderer = _renderers!.Get(widget);
-            if (widget.IsSelected)
+            var renderer = _renderers.Get(widget);
+
+            var screenBounds = transform.SceneToScreen(new Rect(
+                widget.X,
+                widget.Y,
+                widget.Width,
+                widget.Height));
+
+            if (widget.IsSelected && _settings?.ShowSelection == true)
             {
                 context.DrawRectangle(
                     null,
                     new Pen(Brushes.DeepSkyBlue, 2),
-                    new Rect(
-                        widget.X,
-                        widget.Y,
-                        widget.Width+Height,
-                        widget.Height));
+                    screenBounds);
             }
 
-            renderer.Render(context, widget);
+            renderer.Render(context, widget, screenBounds);
         }
+    }
+
+    private void DrawBounds(DrawingContext context, CanvasTransform transform)
+    {
+        var sceneRect = new Rect(0, 0, _canvas!.SceneWidth, _canvas.SceneHeight);
+
+        var screenRect = transform.SceneToScreen(sceneRect);
+
+        var pen = new Pen(Brushes.DimGray, _settings?.BoundsThickness ?? 1);
+
+        context.DrawRectangle(null, pen, screenRect);
     }
 }

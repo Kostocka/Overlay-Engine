@@ -9,10 +9,15 @@ public sealed class CanvasViewModel
 
     public event Action? Changed;
 
+    public double SceneWidth { get; set; }
+
+    public double SceneHeight { get; set; }
+
+    public ViewportViewModel Viewport { get; } = new();
+
     public void Replace(List<WidgetViewModel> widgets)
     {
         Widgets = widgets;
-
         Changed?.Invoke();
     }
 }

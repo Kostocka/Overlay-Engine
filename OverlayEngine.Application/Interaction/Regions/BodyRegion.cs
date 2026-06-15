@@ -7,9 +7,12 @@ namespace OverlayEngine.Application.Interaction.Regions;
 
 public sealed class BodyRegion : IHitRegion
 {
-    public static BodyRegion Instance { get; } = new();
+    private readonly EditorBoundsService _bounds;
 
-    private BodyRegion() {}
+    public BodyRegion(EditorBoundsService bounds)
+    {
+        _bounds = bounds;
+    }
 
     public bool HitTest(Widget widget, Vector2D point)
     {
@@ -36,6 +39,6 @@ public sealed class BodyRegion : IHitRegion
 
     public IWidgetInteraction CreateInteraction(Guid widgetId)
     {
-        return new MoveWidgetInteraction(widgetId);
+        return new MoveWidgetInteraction(widgetId, _bounds);
     }
 }
