@@ -1,4 +1,4 @@
-using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -27,9 +27,12 @@ public partial class OverlayCanvas : UserControl
 
     public void SetCanvas(CanvasViewModel canvas)
     {
-        Console.WriteLine("SetCanvas called");
-
         _canvas = canvas;
+
+        canvas.Changed += () =>
+        {
+            InvalidateVisual();
+        };
     }
 
     public void SetRenderers(WidgetRendererRegistry renderers)
@@ -74,19 +77,20 @@ public partial class OverlayCanvas : UserControl
     {
         base.Render(context);
 
-        Console.WriteLine("Render");
-
-        if (_canvas == null)
-        {
-            Console.WriteLine("_canvas == null");
-            return;
-        }
-
-        Console.WriteLine($"Widgets: {_canvas.Widgets.Count}");
-
         foreach (var widget in _canvas.Widgets)
         {
             var renderer = _renderers!.Get(widget);
+            if (widget.IsSelected)
+            {
+                context.DrawRectangle(
+                    null,
+                    new Pen(Brushes.DeepSkyBlue, 2),
+                    new Rect(
+                        widget.X,
+                        widget.Y,
+                        widget.Width+Height,
+                        widget.Height));
+            }
 
             renderer.Render(context, widget);
         }

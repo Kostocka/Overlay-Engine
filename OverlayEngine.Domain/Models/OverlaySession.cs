@@ -9,6 +9,10 @@ public sealed class OverlaySession
 {
     private readonly List<Widget> _widgets;
 
+    public double Width { get; }
+
+    public double Height { get; }
+
     public IReadOnlyCollection<Widget> Widgets => _widgets;
 
     public OverlayMode Mode { get; private set; }
@@ -21,6 +25,8 @@ public sealed class OverlaySession
 
     public OverlaySession(OverlayProfile profile)
     {
+        Width = profile.Width;
+        Height = profile.Height;
         _widgets = profile.Widgets.Select(CloneWidget).ToList();
         Mode = OverlayMode.View;
         IsDirty = false;

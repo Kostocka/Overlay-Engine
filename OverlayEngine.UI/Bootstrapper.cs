@@ -24,7 +24,9 @@ public sealed class Bootstrapper
     public Bootstrapper()
     {
         SessionService = new OverlaySessionService();
-        var profile = new OverlayProfile(Guid.NewGuid(), "Default", []);
+        var profile = new OverlayProfile(Guid.NewGuid(), "Default", 1920,1080, []);
+        var editorBounds = new EditorBounds(1920, 1080);
+        var boundsConstraint = new WidgetBoundsConstraint(editorBounds);
 
         SessionService.OpenProfile(profile);
 

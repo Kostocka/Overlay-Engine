@@ -19,6 +19,7 @@ public sealed class MoveWidgetInteraction : IWidgetInteraction
 
     public void Begin(PointerContext context, OverlayEditor editor)
     {
+        editor.Select(_widgetId);
         var widget = editor.Session.Get(_widgetId) ?? throw new InvalidOperationException();
 
         _startMouse = context.Position;
@@ -29,10 +30,31 @@ public sealed class MoveWidgetInteraction : IWidgetInteraction
 
     public void Update(PointerContext context, OverlayEditor editor)
     {
+        var widget = editor.Session.Get(_widgetId) ?? throw new InvalidOperationException();
+
         var dx = context.Position.X - _startMouse.X;
         var dy = context.Position.Y - _startMouse.Y;
 
-        editor.Move(_widgetId, _startX + dx, _startY + dy);
+        var x = _startX + dx;
+        var y = _startY + dy;
+
+        if (x < 0)
+            x = 0;
+
+        if (y < 0)
+            y = 0;
+
+        var maxX = editor.Session.Width - widget.Size.Width;
+
+        var maxY = editor.Session.Height - widget.Size.Height;
+
+        if (x > maxX)
+            x = maxX;
+
+        if (y > maxY)
+            y = maxY;
+
+        editor.Move(_widgetId, x, y);
     }
 
     public void End(PointerContext context, OverlayEditor editor) {}

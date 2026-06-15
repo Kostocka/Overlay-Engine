@@ -27,6 +27,7 @@ public sealed class ResizeWidgetInteraction : IWidgetInteraction
 
     public void Begin(PointerContext context, OverlayEditor editor)
     {
+        editor.Select(_widgetId);
         var widget = editor.Session.Get(_widgetId) ?? throw new InvalidOperationException("Widget not found");
 
         _startMouse = context.Position;
