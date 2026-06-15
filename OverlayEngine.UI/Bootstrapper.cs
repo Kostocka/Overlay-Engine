@@ -22,6 +22,7 @@ public sealed class Bootstrapper
     public CanvasViewModel Canvas { get; private set; }
     public CanvasSettings CanvasSettings { get; }
     public ViewportLayoutService Viewport { get; }
+    public RenderPipeline RenderPipeline { get; }
 
     public Bootstrapper()
     {
@@ -67,5 +68,15 @@ public sealed class Bootstrapper
             ShowBounds = true,
             ShowSelection = true
         };
+
+        var viewportLayout = new ViewportLayoutService();
+        var canvasSettings = new CanvasSettings
+        {
+            ShowBounds = true,
+            ShowSelection = true
+        };
+
+        var renderers = new WidgetRendererRegistry();
+        RenderPipeline = new RenderPipeline(viewportLayout, canvasSettings, renderers);
     }
 }

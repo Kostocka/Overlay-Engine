@@ -12,30 +12,31 @@ public sealed class CanvasTransform
         _canvas = canvas;
     }
 
-    public Point SceneToScreen(double x, double y)
+    public Point SceneToScreen(Point p)
     {
         var vp = _canvas.Viewport;
         return new Point(
-            x * vp.Zoom + vp.OffsetX,
-            y * vp.Zoom + vp.OffsetY);
+            p.X * vp.Zoom + vp.OffsetX,
+            p.Y * vp.Zoom + vp.OffsetY);
     }
 
-    public Point ScreenToScene(double x, double y)
+    public Point ScreenToScene(Point p)
     {
         var vp = _canvas.Viewport;
         return new Point(
-            (x - vp.OffsetX) / vp.Zoom,
-            (y - vp.OffsetY) / vp.Zoom);
+            (p.X - vp.OffsetX) / vp.Zoom,
+            (p.Y - vp.OffsetY) / vp.Zoom);
     }
 
-    public Rect SceneToScreen(Rect rect)
+    public Rect SceneToScreen(Rect r)
     {
-        var topLeft = SceneToScreen(rect.X, rect.Y);
+        var topLeft = SceneToScreen(new Point(r.X, r.Y));
+        var vp = _canvas.Viewport;
 
         return new Rect(
             topLeft.X,
             topLeft.Y,
-            rect.Width * _canvas.Viewport.Zoom,
-            rect.Height * _canvas.Viewport.Zoom);
+            r.Width * vp.Zoom,
+            r.Height * vp.Zoom);
     }
 }

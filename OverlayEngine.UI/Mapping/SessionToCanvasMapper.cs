@@ -39,15 +39,14 @@ public static class SessionToCanvasMapper
 
         canvas.Replace(
             session.Widgets.Select(widget => new WidgetViewModel
-                {
-                    Id = widget.Id,
-                    X = widget.Position.X,
-                    Y = widget.Position.Y,
-                    Width = widget.Size.Width,
-                    Height = widget.Size.Height,
-                    IsSelected = session.SelectedWidgetId == widget.Id,
-                    Type = widget.Data.GetType().Name
-                })
-                .ToList());
+            {
+                Id = widget.Id,
+                X = widget.Position.X,
+                Y = widget.Position.Y,
+                Width = widget.Size.Width,
+                Height = widget.Size.Height,
+                IsSelected = session.SelectedWidgetId == widget.Id,
+                Type = widget.Data.GetType().Name
+            }).ToList());
     }
 }

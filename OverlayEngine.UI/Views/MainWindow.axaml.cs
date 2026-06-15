@@ -17,8 +17,6 @@ public partial class MainWindow : Window
 
         canvas?.SetController(bootstrapper.PointerController);
         canvas?.SetCanvas(bootstrapper.Canvas);
-        canvas?.SetRenderers(bootstrapper.Renderers);
-        canvas?.SetSettings(bootstrapper.CanvasSettings);
-        canvas.SetViewport(bootstrapper.Viewport);
+        canvas?.SetPipeline(bootstrapper.RenderPipeline);
     }
 }
