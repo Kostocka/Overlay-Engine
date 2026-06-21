@@ -1,31 +1,19 @@
 using System;
 using OverlayEngine.Application.Commands;
 using OverlayEngine.Application.Editor;
-using OverlayEngine.Application.Interaction;
 using OverlayEngine.Application.Sessions;
-using OverlayEngine.Application.Tools;
-using OverlayEngine.Application.Widgets;
-using OverlayEngine.Application.Widgets.Definitions;
 using OverlayEngine.Domain.Models;
 using OverlayEngine.Domain.ValueObjects;
+using OverlayEngine.UI.Composition;
 using OverlayEngine.UI.Mapping;
-using OverlayEngine.UI.Rendering;
-using OverlayEngine.UI.Rendering.Layers;
 using OverlayEngine.UI.ViewModels;
 
 namespace OverlayEngine.UI;
 
 public sealed class Bootstrapper
 {
-    public OverlayEditor Editor { get; }
-    public WidgetPointerController PointerController { get; }
     public OverlaySessionService SessionService { get; }
-    public WidgetRendererRegistry Renderers { get; }
-    public CanvasViewModel Canvas { get; private set; }
-    public CanvasSettings CanvasSettings { get; }
-    public ViewportLayoutService Viewport { get; }
-    public RenderPipeline RenderPipeline { get; }
-    public WidgetCatalog WidgetCatalog { get; }
+    public EditorShellViewModel Shell { get; }
 
     public Bootstrapper()
     {
@@ -40,53 +28,31 @@ public sealed class Bootstrapper
 
         SessionService.OpenProfile(profile);
 
-        var boundsService = new EditorBoundsService();
+        var widgetModule = WidgetModule.Build();
 
-        WidgetCatalog = new WidgetCatalog(new IWidgetDefinition[]
-        {
-            new TextWidgetDefinition(),
-        });
-
-        var widgetFactory = new WidgetFactory(WidgetCatalog);
-        var sessionWidgets = new SessionWidgetService(widgetFactory);
         var commandManager = new CommandManager();
+        var editor = new OverlayEditor(
+            SessionService,
+            widgetModule.SessionWidgets,
+            commandManager);
 
-        Editor = new OverlayEditor(SessionService, sessionWidgets, commandManager);
-        Editor.EnterEdit();
+        var renderingModule = RenderingModule.Build();
+        var interactionModule = InteractionModule.Build(SessionService, editor);
 
-        var created = Editor.Create(new WidgetDefinitionId("text"));
+        editor.EnterEdit();
 
-        Canvas = SessionToCanvasMapper.Map(Editor.Session);
+        var created = editor.Create(new WidgetDefinitionId("text"));
+        Console.WriteLine($"Created: {created.Id}");
 
+        var canvas = SessionToCanvasMapper.Map(editor.Session);
         var session = SessionService.GetRequiredSession();
-        session.SessionChanged += _ => SessionToCanvasMapper.Update(session, Canvas);
+        session.SessionChanged += _ => SessionToCanvasMapper.Update(session, canvas);
 
-        var hitTest = new WidgetHitTestService(SessionService, boundsService);
-        var selectTool = new SelectTool(hitTest);
-        var toolManager = new ToolManager(selectTool);
-
-        PointerController = new WidgetPointerController(toolManager, Editor);
-
-        Renderers = new WidgetRendererRegistry();
-        Viewport = new ViewportLayoutService();
-
-        CanvasSettings = new CanvasSettings
-        {
-            ShowBounds = true,
-            ShowSelection = true,
-            ShowGrid = false
-        };
-
-        RenderPipeline = new RenderPipeline(
-            new ICanvasLayer[]
-            {
-                new GridLayer(),
-                new SceneBoundsLayer(),
-                new WidgetLayer(),
-                new SelectionLayer()
-            },
-            Viewport,
-            CanvasSettings,
-            Renderers);
+        Shell = ShellModule.Build(
+            editor,
+            widgetModule.Catalog,
+            canvas,
+            renderingModule.RenderPipeline,
+            interactionModule.PointerController);
     }
 }

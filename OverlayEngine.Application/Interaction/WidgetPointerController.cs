@@ -19,6 +19,8 @@ public sealed class WidgetPointerController
 
     public void PointerDown(PointerContext context)
     {
+        if (!_editor.Session.IsEditMode)
+            return;
         _interaction = _toolManager.ActiveTool.CreateInteraction(context);
 
         _interaction?.Begin(context, _editor);
@@ -26,11 +28,15 @@ public sealed class WidgetPointerController
 
     public void PointerMove(PointerContext context)
     {
+        if (!_editor.Session.IsEditMode)
+            return;
         _interaction?.Update(context, _editor);
     }
 
     public void PointerUp(PointerContext context)
     {
+        if (!_editor.Session.IsEditMode)
+            return;
         _interaction?.End(context, _editor);
 
         _interaction = null;

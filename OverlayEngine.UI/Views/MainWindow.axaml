@@ -1,17 +1,51 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:OverlayEngine.UI.ViewModels"
         xmlns:controls="clr-namespace:OverlayEngine.UI.Controls"
         x:Class="OverlayEngine.UI.Views.MainWindow"
-        Width="1200" Height="800"
+        Width="1200"
+        Height="800"
+        WindowState="Maximized"
         Title="Overlay Engine">
 
-    <Window.DataContext>
-        <vm:MainWindowViewModel/>
-    </Window.DataContext>
-
     <Grid>
-        <controls:OverlayCanvas Name="Canvas"/>
-    </Grid>
+        <controls:OverlayCanvas x:Name="Canvas"/>
 
+        <Border HorizontalAlignment="Stretch"
+                VerticalAlignment="Top"
+                Height="56"
+                Background="#AA202020"
+                IsVisible="{Binding IsToolbarVisible}">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="8"
+                        Margin="12,0">
+                <Button Content="Edit / View"
+                        Command="{Binding ToggleEditModeCommand}" />
+                <Button Content="Catalog"
+                        Command="{Binding ToggleCatalogCommand}" />
+            </StackPanel>
+        </Border>
+
+        <Border HorizontalAlignment="Right"
+                Width="320"
+                Background="#CC202020"
+                IsVisible="{Binding IsCatalogVisible}">
+            <DockPanel Margin="12">
+                <TextBlock Text="Widget Catalog"
+                           FontSize="18"
+                           Margin="0,0,0,12"
+                           DockPanel.Dock="Top"/>
+
+                <ItemsControl ItemsSource="{Binding Definitions}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding DisplayName}"
+                                    Margin="0,0,0,8"
+                                    Command="{Binding DataContext.AddWidgetCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding Id.Value}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </DockPanel>
+        </Border>
+    </Grid>
 </Window>

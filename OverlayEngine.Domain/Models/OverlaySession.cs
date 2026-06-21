@@ -48,6 +48,8 @@ public sealed class OverlaySession
 
     public void MarkSaved() => IsDirty = false;
 
+    public bool IsEditMode => Mode is OverlayMode.Edit;
+
     public Widget? Get(Guid id) => _widgets.FirstOrDefault(x => x.Id == id);
 
     public Widget? GetSelected()

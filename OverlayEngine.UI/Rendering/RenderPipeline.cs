@@ -15,11 +15,10 @@ public sealed class RenderPipeline
 
     public RenderPipeline(IEnumerable<ICanvasLayer> layers ,ViewportLayoutService viewportLayout, CanvasSettings settings, WidgetRendererRegistry renderers)
     {
+        _layers = layers.ToList();
         _viewportLayout = viewportLayout;
         _settings = settings;
         _renderers = renderers;
-
-        _layers = layers.ToList();
     }
 
     public void FitViewport(CanvasViewModel canvas, double availableWidth, double availableHeight)
