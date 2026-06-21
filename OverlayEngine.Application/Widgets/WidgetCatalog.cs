@@ -1,15 +1,27 @@
-using OverlayEngine.Application.Widgets.Templates;
+using OverlayEngine.Application.Widgets.Definitions;
+using OverlayEngine.Domain.ValueObjects;
+using OverlayEngine.Domain.Widgets;
 
 namespace OverlayEngine.Application.Widgets;
 
 public sealed class WidgetCatalog
 {
-    private readonly List<WidgetTemplate> _templates = new();
+    private readonly IReadOnlyDictionary<string, IWidgetDefinition> _definitions;
 
-    public void Register(WidgetTemplate template)
+    public IReadOnlyCollection<IWidgetDefinition> All => _definitions.Values.ToArray();
+
+    public WidgetCatalog(IEnumerable<IWidgetDefinition> definitions)
     {
-        _templates.Add(template);
+        _definitions = definitions.ToDictionary(x => x.Id.Value);
     }
 
-    public IReadOnlyList<WidgetTemplate> GetAll() => _templates;
+    public Widget CreateDefault(WidgetDefinitionId id)
+    {
+        if (!_definitions.TryGetValue(id.Value, out var definition))
+        {
+            throw new NotSupportedException($"No widget definition for id: {id}");
+        }
+
+        return definition.CreateDefault();
+    }
 }

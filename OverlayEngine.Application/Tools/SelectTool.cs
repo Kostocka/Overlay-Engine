@@ -1,5 +1,6 @@
 using OverlayEngine.Application.Common;
 using OverlayEngine.Application.Interaction;
+using OverlayEngine.Application.Interaction.Interactions;
 
 namespace OverlayEngine.Application.Tools;
 
@@ -17,7 +18,9 @@ public sealed class SelectTool : ITool
         var hit = _hitTest.HitTest(context.Position);
 
         if (hit == null)
-            return null;
+        {
+            return new EmptyCanvasInteraction();
+        }
 
         return hit.Region.CreateInteraction(hit.WidgetId);
     }

@@ -6,10 +6,7 @@ namespace OverlayEngine.UI.Rendering;
 
 public sealed class TextWidgetRenderer : IWidgetRenderer
 {
-    public bool CanRender(WidgetViewModel widget)
-    {
-        return widget.Type == "TextWidgetData";
-    }
+    public bool CanRender(WidgetViewModel widget) => widget.DefinitionId.Value == "text";
 
     public void Render(DrawingContext context, WidgetViewModel widget, WidgetRenderContext renderContext)
     {
@@ -21,7 +18,7 @@ public sealed class TextWidgetRenderer : IWidgetRenderer
             rect);
 
         var formatted = new FormattedText(
-            widget.Type,
+            "Text",
             System.Globalization.CultureInfo.InvariantCulture,
             FlowDirection.LeftToRight,
             new Typeface("Arial"),

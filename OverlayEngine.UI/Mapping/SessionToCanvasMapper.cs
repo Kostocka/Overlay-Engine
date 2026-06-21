@@ -8,11 +8,7 @@ public static class SessionToCanvasMapper
 {
     public static CanvasViewModel Map(OverlaySession session)
     {
-        var vm = new CanvasViewModel
-        {
-            SceneWidth = session.Width,
-            SceneHeight = session.Height
-        };
+        var vm = new CanvasViewModel { SceneWidth = session.Width, SceneHeight = session.Height };
 
         foreach (var widget in session.Widgets)
         {
@@ -25,7 +21,7 @@ public static class SessionToCanvasMapper
                     Width = widget.Size.Width,
                     Height = widget.Size.Height,
                     IsSelected = session.SelectedWidgetId == widget.Id,
-                    Type = widget.Data.GetType().Name
+                    DefinitionId = widget.DefinitionId
                 });
         }
 
@@ -46,7 +42,7 @@ public static class SessionToCanvasMapper
                 Width = widget.Size.Width,
                 Height = widget.Size.Height,
                 IsSelected = session.SelectedWidgetId == widget.Id,
-                Type = widget.Data.GetType().Name
+                DefinitionId = widget.DefinitionId
             }).ToList());
     }
 }

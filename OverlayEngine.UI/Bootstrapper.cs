@@ -5,10 +5,12 @@ using OverlayEngine.Application.Interaction;
 using OverlayEngine.Application.Sessions;
 using OverlayEngine.Application.Tools;
 using OverlayEngine.Application.Widgets;
-using OverlayEngine.Application.Widgets.Templates;
+using OverlayEngine.Application.Widgets.Definitions;
 using OverlayEngine.Domain.Models;
+using OverlayEngine.Domain.ValueObjects;
 using OverlayEngine.UI.Mapping;
 using OverlayEngine.UI.Rendering;
+using OverlayEngine.UI.Rendering.Layers;
 using OverlayEngine.UI.ViewModels;
 
 namespace OverlayEngine.UI;
@@ -23,60 +25,68 @@ public sealed class Bootstrapper
     public CanvasSettings CanvasSettings { get; }
     public ViewportLayoutService Viewport { get; }
     public RenderPipeline RenderPipeline { get; }
+    public WidgetCatalog WidgetCatalog { get; }
 
     public Bootstrapper()
     {
         SessionService = new OverlaySessionService();
-        var profile = new OverlayProfile(Guid.NewGuid(), "Default", 1920,1080, []);
+
+        var profile = new OverlayProfile(
+            Guid.NewGuid(),
+            "Default",
+            1920,
+            1080,
+            []);
 
         SessionService.OpenProfile(profile);
 
         var boundsService = new EditorBoundsService();
-        var widgetFactory = new WidgetFactory();
+
+        WidgetCatalog = new WidgetCatalog(new IWidgetDefinition[]
+        {
+            new TextWidgetDefinition(),
+        });
+
+        var widgetFactory = new WidgetFactory(WidgetCatalog);
         var sessionWidgets = new SessionWidgetService(widgetFactory);
         var commandManager = new CommandManager();
 
         Editor = new OverlayEditor(SessionService, sessionWidgets, commandManager);
         Editor.EnterEdit();
 
-        // test
-        var created = Editor.Create(new TextWidgetTemplate());
-
-        Console.WriteLine($"Created: {created.Id}");
-
-        Console.WriteLine(
-            $"Session widgets: {Editor.Session.Widgets.Count}");
+        var created = Editor.Create(new WidgetDefinitionId("text"));
 
         Canvas = SessionToCanvasMapper.Map(Editor.Session);
 
-        Console.WriteLine(
-            $"Canvas widgets: {Canvas.Widgets.Count}");
-
         var session = SessionService.GetRequiredSession();
-        session.SessionChanged += _ => { SessionToCanvasMapper.Update(session, Canvas); };
+        session.SessionChanged += _ => SessionToCanvasMapper.Update(session, Canvas);
 
         var hitTest = new WidgetHitTestService(SessionService, boundsService);
         var selectTool = new SelectTool(hitTest);
         var toolManager = new ToolManager(selectTool);
 
         PointerController = new WidgetPointerController(toolManager, Editor);
+
         Renderers = new WidgetRendererRegistry();
         Viewport = new ViewportLayoutService();
 
         CanvasSettings = new CanvasSettings
         {
             ShowBounds = true,
-            ShowSelection = true
+            ShowSelection = true,
+            ShowGrid = false
         };
 
-        var viewportLayout = new ViewportLayoutService();
-        var canvasSettings = new CanvasSettings
-        {
-            ShowBounds = true,
-            ShowSelection = true
-        };
-
-        var renderers = new WidgetRendererRegistry();
-        RenderPipeline = new RenderPipeline(viewportLayout, canvasSettings, renderers);
+        RenderPipeline = new RenderPipeline(
+            new ICanvasLayer[]
+            {
+                new GridLayer(),
+                new SceneBoundsLayer(),
+                new WidgetLayer(),
+                new SelectionLayer()
+            },
+            Viewport,
+            CanvasSettings,
+            Renderers);
     }
 }

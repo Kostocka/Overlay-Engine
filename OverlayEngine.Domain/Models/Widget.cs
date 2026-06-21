@@ -9,6 +9,8 @@ public sealed class Widget
 
     public string Name { get; }
 
+    public WidgetDefinitionId DefinitionId { get; }
+
     public WidgetData Data { get; }
 
     public WidgetPosition Position { get; private set; }
@@ -17,10 +19,11 @@ public sealed class Widget
 
     public WidgetStyle Style { get; private set; }
 
-    public Widget(Guid id, string name, WidgetPosition position, WidgetSize size, WidgetStyle style, WidgetData widgetData)
+    public Widget(Guid id, string name, WidgetDefinitionId definitionId,  WidgetPosition position, WidgetSize size, WidgetStyle style, WidgetData widgetData)
     {
         Id = id;
         Name = name;
+        DefinitionId = definitionId;
         Position = position;
         Size = size;
         Style = style;

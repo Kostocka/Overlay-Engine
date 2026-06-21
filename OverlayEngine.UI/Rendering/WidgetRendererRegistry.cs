@@ -17,6 +17,6 @@ public sealed class WidgetRendererRegistry
     public IWidgetRenderer Get(WidgetViewModel widget)
     {
         var renderer = _renderers.FirstOrDefault(x => x.CanRender(widget));
-        return renderer ?? throw new InvalidOperationException($"No renderer for {widget.Type}");
+        return renderer ?? throw new InvalidOperationException($"No renderer for {widget.DefinitionId}");
     }
 }

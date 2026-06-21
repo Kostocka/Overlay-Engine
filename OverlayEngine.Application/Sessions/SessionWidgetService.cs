@@ -1,5 +1,5 @@
 using OverlayEngine.Application.Widgets;
-using OverlayEngine.Application.Widgets.Templates;
+using OverlayEngine.Domain.ValueObjects;
 using OverlayEngine.Domain.Widgets;
 
 namespace OverlayEngine.Application.Sessions;
@@ -13,8 +13,8 @@ public sealed class SessionWidgetService
         _widgetFactory = widgetFactory;
     }
 
-    public Widget CreateWidget(WidgetTemplate template)
+    public Widget CreateWidget(WidgetDefinitionId definitionId)
     {
-        return _widgetFactory.Create(template);
+        return _widgetFactory.Create(definitionId);
     }
 }

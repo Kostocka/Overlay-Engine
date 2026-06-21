@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia.Media;
 using OverlayEngine.UI.Rendering.Layers;
 using OverlayEngine.UI.ViewModels;
@@ -12,19 +13,13 @@ public sealed class RenderPipeline
     private readonly WidgetRendererRegistry _renderers;
     private readonly IReadOnlyList<ICanvasLayer> _layers;
 
-    public RenderPipeline(ViewportLayoutService viewportLayout, CanvasSettings settings, WidgetRendererRegistry renderers)
+    public RenderPipeline(IEnumerable<ICanvasLayer> layers ,ViewportLayoutService viewportLayout, CanvasSettings settings, WidgetRendererRegistry renderers)
     {
         _viewportLayout = viewportLayout;
         _settings = settings;
         _renderers = renderers;
 
-        _layers =
-        [
-            new GridLayer(),
-            new SceneBoundsLayer(),
-            new WidgetLayer(),
-            new SelectionLayer()
-        ];
+        _layers = layers.ToList();
     }
 
     public void FitViewport(CanvasViewModel canvas, double availableWidth, double availableHeight)

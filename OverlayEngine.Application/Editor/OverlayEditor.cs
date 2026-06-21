@@ -1,7 +1,6 @@
 using OverlayEngine.Application.Commands;
 using OverlayEngine.Application.Commands.Widgets;
 using OverlayEngine.Application.Sessions;
-using OverlayEngine.Application.Widgets.Templates;
 using OverlayEngine.Domain.Models;
 using OverlayEngine.Domain.ValueObjects;
 using OverlayEngine.Domain.Widgets;
@@ -23,10 +22,9 @@ public sealed class OverlayEditor
 
     public OverlaySession Session => _sessions.GetRequiredSession();
 
-    public Widget Create(WidgetTemplate template)
+    public Widget Create(WidgetDefinitionId definitionId)
     {
-        var widget = _widgets.CreateWidget(template);
-
+        var widget = _widgets.CreateWidget(definitionId);
         _commands.Execute(new AddWidgetCommand(Session, widget));
 
         return widget;

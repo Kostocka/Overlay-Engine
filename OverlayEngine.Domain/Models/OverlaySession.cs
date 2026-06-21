@@ -127,6 +127,7 @@ public sealed class OverlaySession
         return new Widget(
             widget.Id,
             widget.Name,
+            widget.DefinitionId,
             new WidgetPosition(widget.Position.X, widget.Position.Y),
             new WidgetSize(widget.Size.Width, widget.Size.Height),
             widget.Style,
